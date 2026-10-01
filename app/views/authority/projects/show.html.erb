@@ -1,0 +1,11 @@
+<% content_for :title, "Project Details" %>
+<div class="page-shell">
+  <%= render "shared/project_details",
+    project: @project,
+    nocs: @nocs,
+    committee_meetings: @committee_meetings,
+    recent_reports: @recent_reports,
+    noc: nil,
+    committee_meeting: nil,
+    editable: false %>
+</div>

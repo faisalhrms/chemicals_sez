@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Sapphire SVA SEZ Portal" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <% theme = authenticated? ? current_user.theme_preference : "light" %>
+  <% layout_mode = authenticated? ? current_user.portal_layout : "authentication" %>
+  <% density = authenticated? ? current_user.table_density : "comfortable" %>
+  <body class="portal-body" data-theme="<%= theme %>" data-layout="<%= layout_mode %>" data-density="<%= density %>">
+    <% if authenticated? %>
+      <% page_content = capture { yield } %>
+      <% if current_user.modern_topbar? %>
+        <%= render "layouts/portal_modern", content: page_content %>
+      <% else %>
+        <%= render "layouts/portal_classic", content: page_content %>
+      <% end %>
+    <% else %>
+      <%= yield %>
+    <% end %>
+  </body>
+</html>

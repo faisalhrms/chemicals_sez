@@ -1,0 +1,5 @@
+<nav class="account-tabs" aria-label="Account settings">
+  <%= link_to "Profile", account_profile_path, class: "account-tab #{controller_path == 'account/profiles' ? 'account-tab-active' : ''}" %>
+  <%= link_to "Appearance", edit_account_appearance_path, class: "account-tab #{controller_path == 'account/appearances' ? 'account-tab-active' : ''}" %>
+  <%= link_to "Security", edit_account_password_path, class: "account-tab #{controller_path == 'account/passwords' ? 'account-tab-active' : ''}" %>
+</nav>

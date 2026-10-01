@@ -1,0 +1,34 @@
+<% content_for :title, "Review Report" %>
+<div class="page-shell">
+  <div class="mb-5">
+    <%= link_to "← Back to Review Center", developer_reviews_path, class: "text-sm font-semibold text-blue-600 hover:underline" %>
+    <h1 class="mt-2 page-title">Review Report</h1>
+  </div>
+
+  <div class="mb-5 card grid gap-4 p-4 sm:grid-cols-4">
+    <div><div class="text-[11px] font-semibold uppercase text-slate-500">Reporting Month</div><div class="mt-1 text-sm font-semibold"><%= @report.reporting_month_label %></div></div>
+    <div><div class="text-[11px] font-semibold uppercase text-slate-500">Report Date</div><div class="mt-1 text-sm font-semibold"><%= format_date(@report.report_date) %></div></div>
+    <div><div class="text-[11px] font-semibold uppercase text-slate-500">Submitted By</div><div class="mt-1 text-sm font-semibold"><%= @report.submitted_by&.name || "—" %></div></div>
+    <div><div class="text-[11px] font-semibold uppercase text-slate-500">Status</div><div class="mt-1"><%= render "shared/status_badge", status: @report.status %></div></div>
+  </div>
+
+  <%= render "shared/report_table", report: @report %>
+
+  <% if current_user.reviewer? && policy(@report).review? %>
+    <div class="mt-5 card p-5">
+      <%= form_with url: revert_developer_review_path(@report), method: :post do |form| %>
+        <%= form.label :comment, "Comments (Required for rejection)", class: "field-label" %>
+        <%= form.text_area :comment, rows: 3, maxlength: 2000, class: "field", placeholder: "Enter comments here..." %>
+        <div class="mt-4 flex flex-wrap justify-end gap-3">
+          <%= form.submit "Reject / Revert", class: "btn-danger", data: { turbo_confirm: "Revert this report to the submitter?" } %>
+          <%= form.submit "Approve & Forward", class: "btn-success", formaction: approve_developer_review_path(@report), data: { turbo_confirm: "Approve this report and make it visible to Authority?" } %>
+        </div>
+      <% end %>
+    </div>
+  <% elsif @report.review_comment.present? %>
+    <div class="mt-5 card p-5">
+      <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Review comment</div>
+      <p class="mt-2 text-sm leading-6 text-slate-700"><%= @report.review_comment %></p>
+    </div>
+  <% end %>
+</div>

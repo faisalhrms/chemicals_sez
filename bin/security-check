@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bundle exec brakeman -q -w2
+bundle exec bundler-audit check --update
+bundle exec rubocop
+bin/rails test

@@ -1,0 +1,21 @@
+[Unit]
+Description=Sapphire SVA SEZ Portal
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=sez
+WorkingDirectory=/apps/sapphire_chemical/sez/current
+EnvironmentFile=/apps/sapphire_chemical/sez/shared/portal.env
+Environment=PATH=/home/sez/.rbenv/versions/4.0.5/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/sez/.rbenv/versions/4.0.5/bin/bundle exec puma -C config/puma.rb
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+PrivateTmp=true
+NoNewPrivileges=true
+SyslogIdentifier=sez-sapphire-chemical
+
+[Install]
+WantedBy=multi-user.target

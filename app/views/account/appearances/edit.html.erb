@@ -1,0 +1,86 @@
+<% content_for :title, "Appearance" %>
+<div class="page-shell account-shell">
+  <div class="mb-6">
+    <h1 class="page-title">Appearance</h1>
+    <p class="page-subtitle">Choose how the portal looks for your account. Your selection follows you across devices.</p>
+  </div>
+
+  <%= render "shared/account_tabs" %>
+
+  <%= form_with model: @user, url: account_appearance_path, method: :patch, class: "mt-5 space-y-5" do |form| %>
+    <section class="card p-5 sm:p-6">
+      <div class="section-heading">
+        <div>
+          <h2>Portal layout</h2>
+          <p>Both layouts use the same data, permissions and workflow.</p>
+        </div>
+      </div>
+
+      <div class="layout-choice-grid">
+        <label class="layout-choice">
+          <%= form.radio_button :portal_layout, "classic_sidebar", class: "layout-radio" %>
+          <span class="layout-preview preview-sidebar" aria-hidden="true">
+            <span class="preview-side"></span>
+            <span class="preview-body"><i></i><i></i><i></i><i></i></span>
+          </span>
+          <span class="layout-choice-copy">
+            <strong>Classic Sidebar</strong>
+            <small>Permanent navigation for dense enterprise workflows.</small>
+          </span>
+        </label>
+
+        <label class="layout-choice">
+          <%= form.radio_button :portal_layout, "modern_topbar", class: "layout-radio" %>
+          <span class="layout-preview preview-topbar" aria-hidden="true">
+            <span class="preview-top"></span>
+            <span class="preview-body"><i></i><i></i><i></i><i></i></span>
+          </span>
+          <span class="layout-choice-copy">
+            <strong>Modern Top Navigation</strong>
+            <small>Open workspace with top navigation and larger content area.</small>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card p-5 sm:p-6">
+      <div class="section-heading">
+        <div>
+          <h2>Theme</h2>
+          <p>Use your device theme or choose a fixed light/dark appearance.</p>
+        </div>
+      </div>
+
+      <div class="setting-options">
+        <% [["system", "System", "Follow your operating system"], ["light", "Light", "Bright workspace"], ["dark", "Dark", "OLED-friendly dark surfaces"]].each do |value, label, description| %>
+          <label class="setting-option">
+            <%= form.radio_button :theme_preference, value %>
+            <span><strong><%= label %></strong><small><%= description %></small></span>
+          </label>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="card p-5 sm:p-6">
+      <div class="section-heading">
+        <div>
+          <h2>Table density</h2>
+          <p>Choose comfortable spacing or fit more rows on screen.</p>
+        </div>
+      </div>
+
+      <div class="setting-options">
+        <% [["comfortable", "Comfortable", "More spacing for everyday use"], ["compact", "Compact", "More rows visible at once"]].each do |value, label, description| %>
+          <label class="setting-option">
+            <%= form.radio_button :table_density, value %>
+            <span><strong><%= label %></strong><small><%= description %></small></span>
+          </label>
+        <% end %>
+      </div>
+    </section>
+
+    <div class="flex justify-end">
+      <%= form.submit "Save Appearance", class: "btn-primary" %>
+    </div>
+  <% end %>
+</div>

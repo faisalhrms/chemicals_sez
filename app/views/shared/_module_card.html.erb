@@ -1,0 +1,26 @@
+<% tone_classes = {
+  "blue" => "bg-blue-50 text-blue-600",
+  "green" => "bg-emerald-50 text-emerald-600",
+  "orange" => "bg-orange-50 text-orange-600",
+  "purple" => "bg-violet-50 text-violet-600"
+}.fetch(local_assigns[:tone].presence || "blue") %>
+
+<%= link_to path, class: "group module-card" do %>
+  <div class="flex min-w-0 items-center gap-4">
+    <div class="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl <%= tone_classes %>">
+      <%= render "shared/portal_icon", name: icon, class_name: "h-6 w-6" %>
+    </div>
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 class="text-[15px] font-bold text-slate-900 sm:text-base"><%= title %></h2>
+        <% if local_assigns[:badge].present? %>
+          <span class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-700"><%= badge %></span>
+        <% end %>
+      </div>
+      <p class="mt-1.5 max-w-md text-sm leading-5 text-slate-500"><%= description %></p>
+    </div>
+  </div>
+  <span class="module-card-arrow">
+    <%= render "shared/portal_icon", name: "arrow", class_name: "h-4 w-4" %>
+  </span>
+<% end %>

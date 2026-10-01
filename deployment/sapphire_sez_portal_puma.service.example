@@ -1,0 +1,20 @@
+[Unit]
+Description=Sapphire SEZ Portal Puma
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/var/www/sapphire_sez_portal/current
+EnvironmentFile=/etc/sapphire_sez_portal.env
+ExecStart=/bin/bash -lc 'bundle exec puma -C config/puma.rb'
+Restart=always
+RestartSec=5
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/var/www/sapphire_sez_portal/shared /var/www/sapphire_sez_portal/current/tmp
+
+[Install]
+WantedBy=multi-user.target

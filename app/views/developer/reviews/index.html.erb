@@ -1,0 +1,56 @@
+<% content_for :title, "Review Center" %>
+<div class="page-shell" data-controller="tabs">
+  <div class="mb-5">
+    <h1 class="page-title">Review Center</h1>
+    <p class="page-subtitle"><%= current_user.reviewer? ? "Review submitted reports and approve or revert them." : "Track reports you have submitted for review." %></p>
+  </div>
+
+  <div class="card overflow-hidden">
+    <div class="portal-tabs" role="tablist" aria-label="Review report status">
+      <button type="button" class="portal-tab" data-tabs-target="tab" data-index="0" data-active="true" data-action="tabs#show" role="tab">Under Review (<%= @pending_reports.count %>)</button>
+      <button type="button" class="portal-tab" data-tabs-target="tab" data-index="1" data-action="tabs#show" role="tab"><%= current_user.reviewer? ? "Reviewed" : "Decided" %> (<%= @reviewed_reports.count %>)</button>
+    </div>
+
+    <section class="p-0" data-tabs-target="panel">
+      <div class="table-wrap rounded-none border-0" data-controller="datatable">
+        <table class="data-table" data-datatable-target="table">
+          <thead><tr><th>#</th><th>Reporting Month</th><th>Report Date</th><th>Submitted By</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <% @pending_reports.each_with_index do |report, index| %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td class="font-medium text-slate-900"><%= report.reporting_month_label %></td>
+                <td><%= format_date(report.report_date) %></td>
+                <td><%= report.submitted_by&.name || "—" %></td>
+                <td><%= render "shared/status_badge", status: report.status %></td>
+                <td><%= table_action_link "View", developer_review_path(report), icon: "view" %></td>
+              </tr>
+            <% end %>
+            <% if @pending_reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No reports are waiting for review.</td></tr><% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="hidden p-0" data-tabs-target="panel">
+      <div class="table-wrap rounded-none border-0" data-controller="datatable">
+        <table class="data-table" data-datatable-target="table">
+          <thead><tr><th>#</th><th>Reporting Month</th><th>Report Date</th><th>Status</th><th>Reviewed At</th><th>Action</th></tr></thead>
+          <tbody>
+            <% @reviewed_reports.each_with_index do |report, index| %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td class="font-medium text-slate-900"><%= report.reporting_month_label %></td>
+                <td><%= format_date(report.report_date) %></td>
+                <td><%= render "shared/status_badge", status: report.status %></td>
+                <td><%= report.reviewed_at&.in_time_zone&.strftime("%d-%m-%Y %H:%M") || "—" %></td>
+                <td><%= table_action_link "View", developer_review_path(report), icon: "view" %></td>
+              </tr>
+            <% end %>
+            <% if @reviewed_reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No reviewed reports yet.</td></tr><% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

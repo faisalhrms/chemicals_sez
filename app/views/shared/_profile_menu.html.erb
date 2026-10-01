@@ -1,0 +1,35 @@
+<% placement = local_assigns[:placement] || "top" %>
+<details class="profile-menu <%= placement == 'sidebar' ? 'profile-menu-sidebar' : '' %>">
+  <summary class="profile-menu-trigger" aria-label="Open profile menu">
+    <%= profile_avatar(current_user, class_name: "h-9 w-9") %>
+    <span class="min-w-0 flex-1 text-left">
+      <span class="block truncate text-sm font-semibold"><%= current_user.name %></span>
+      <span class="block truncate text-[11px] opacity-60"><%= current_user.job_title.presence || workspace_label(current_user) %></span>
+    </span>
+    <span class="profile-chevron" aria-hidden="true">⌄</span>
+  </summary>
+
+  <div class="profile-menu-panel">
+    <div class="profile-menu-heading">
+      <div class="font-semibold"><%= current_user.name %></div>
+      <div class="text-xs text-slate-500"><%= current_user.email_address %></div>
+    </div>
+    <%= link_to account_profile_path, class: "profile-menu-link" do %>
+      <%= render "shared/portal_icon", name: "profile", class_name: "h-4 w-4" %>
+      <span>My Profile</span>
+    <% end %>
+    <%= link_to edit_account_appearance_path, class: "profile-menu-link" do %>
+      <%= render "shared/portal_icon", name: "appearance", class_name: "h-4 w-4" %>
+      <span>Appearance</span>
+    <% end %>
+    <%= link_to edit_account_password_path, class: "profile-menu-link" do %>
+      <%= render "shared/portal_icon", name: "lock", class_name: "h-4 w-4" %>
+      <span>Change Password</span>
+    <% end %>
+    <div class="my-1 border-t border-slate-200"></div>
+    <%= button_to session_path, method: :delete, class: "profile-menu-link w-full text-left text-red-600" do %>
+      <%= render "shared/portal_icon", name: "logout", class_name: "h-4 w-4" %>
+      <span>Sign Out</span>
+    <% end %>
+  </div>
+</details>

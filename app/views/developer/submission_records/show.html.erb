@@ -1,0 +1,17 @@
+<% content_for :title, "Submission Record" %>
+<div class="page-shell">
+  <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <%= link_to "← Back to Submission Records", developer_submission_records_path(month: @report.reporting_month.strftime("%Y-%m")), class: "text-sm font-semibold text-blue-600 hover:underline" %>
+      <h1 class="mt-2 page-title">Submission Record</h1>
+      <p class="page-subtitle"><%= @report.reporting_month_label %> · <%= format_date(@report.report_date) %></p>
+    </div>
+    <%= render "shared/status_badge", status: @report.status %>
+  </div>
+
+  <%= render "shared/report_table", report: @report %>
+
+  <% if @report.review_comment.present? %>
+    <div class="mt-5 card p-4 text-sm"><strong>Review comment:</strong> <%= @report.review_comment %></div>
+  <% end %>
+</div>

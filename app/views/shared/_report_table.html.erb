@@ -1,0 +1,26 @@
+<div class="table-wrap" data-controller="datatable">
+  <table class="data-table" data-datatable-target="table">
+    <thead>
+      <tr>
+        <th class="w-12">#</th>
+        <th>Description</th>
+        <th>Percentage Completion<br><span class="normal-case font-normal">(As of <%= format_date(report.report_date) %>)</span></th>
+        <th>Expected Date of Completion</th>
+        <th>Reasons for Delay</th>
+        <th>Support Required</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% report.items.includes(:development_category).each_with_index do |item, index| %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td class="font-medium text-slate-900"><%= item.development_category.name %></td>
+          <td><%= item.completion_percentage.present? ? "#{item.completion_percentage}%" : "—" %></td>
+          <td><%= format_date(item.expected_completion_on) %></td>
+          <td><%= item.delay_reason.presence || "—" %></td>
+          <td><%= item.support_required.presence || "—" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

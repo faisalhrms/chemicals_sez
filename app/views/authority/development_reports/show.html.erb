@@ -1,0 +1,23 @@
+<% content_for :title, "Development Status Report" %>
+<div class="page-shell">
+  <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <%= link_to "← Back to Progress Updates", authority_development_reports_path(month: @report.reporting_month.strftime("%Y-%m")), class: "text-sm font-semibold text-blue-600 hover:underline" %>
+      <h1 class="mt-2 page-title">Development Status Report</h1>
+      <p class="page-subtitle">Reporting Month: <%= @report.reporting_month_label %> · Report Date: <%= format_date(@report.report_date) %> · Read only</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <%= render "shared/status_badge", status: @report.status %>
+      <%= link_to export_authority_development_report_path(@report), class: "btn-primary" do %>
+        <%= render "shared/portal_icon", name: "download", class_name: "mr-2 h-4 w-4" %>
+        Export to Excel
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "shared/report_table", report: @report %>
+
+  <% if @report.attachment.attached? %>
+    <div class="mt-5"><%= link_to "Download submitted DSR PDF", download_attachment_authority_development_report_path(@report), class: "btn-secondary" %></div>
+  <% end %>
+</div>

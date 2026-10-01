@@ -1,0 +1,53 @@
+<% content_for :title, "Developer Portal" %>
+<div class="page-shell dashboard-page">
+  <div class="dashboard-shell">
+    <% if current_user.modern_topbar? %>
+      <section class="modern-dashboard-hero mb-7">
+        <%= image_tag "industrial-campus.jpg", alt: "", class: "modern-dashboard-hero-image", aria: { hidden: true } %>
+        <div class="modern-dashboard-hero-overlay" aria-hidden="true"></div>
+        <div class="modern-dashboard-hero-copy">
+          <p class="hero-kicker">Sapphire SVA SEZ</p>
+          <h1>Good <%= Time.current.hour < 12 ? "morning" : Time.current.hour < 18 ? "afternoon" : "evening" %>, <%= current_user.name %></h1>
+          <p>Select a module to continue your project monitoring work.</p>
+        </div>
+      </section>
+    <% else %>
+      <div class="classic-dashboard-heading">
+        <p class="hero-kicker">Sapphire SVA SEZ</p>
+        <h1 class="page-title">Welcome, <%= current_user.name %></h1>
+        <p class="page-subtitle">Select a module to continue</p>
+      </div>
+    <% end %>
+
+    <div class="dashboard-grid">
+      <%= render "shared/module_card",
+        title: "Project Details",
+        description: "View and maintain project information, NOCs and committee meetings.",
+        path: developer_project_path,
+        icon: "project",
+        tone: "blue" %>
+
+      <%= render "shared/module_card",
+        title: "Progress Update",
+        description: "Create and update Development Status Reports.",
+        path: developer_development_reports_path,
+        icon: "progress",
+        tone: "green" %>
+
+      <%= render "shared/module_card",
+        title: "Review Center",
+        description: (current_user.reviewer? ? "Review submitted reports and approve or revert them." : "Track reports submitted for review and their decisions."),
+        path: developer_reviews_path,
+        icon: "review",
+        tone: "orange",
+        badge: (@pending_reviews.positive? ? "#{@pending_reviews} Pending" : nil) %>
+
+      <%= render "shared/module_card",
+        title: "Submission Records",
+        description: "View all submitted reports and their history.",
+        path: developer_submission_records_path,
+        icon: "records",
+        tone: "purple" %>
+    </div>
+  </div>
+</div>

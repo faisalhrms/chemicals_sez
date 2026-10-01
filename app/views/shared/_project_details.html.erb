@@ -1,0 +1,416 @@
+<div data-controller="tabs">
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="page-title">Project Details</h1>
+      <p class="page-subtitle">SEZ, project, statutory and submission information</p>
+    </div>
+    <% if editable %>
+      <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+        Editable
+      </span>
+    <% else %>
+      <span class="read-only-badge">Authority view · Read only</span>
+    <% end %>
+  </div>
+
+  <div class="card overflow-hidden">
+    <% tabs = [
+      ["SEZ Details", "sez-details"],
+      ["Project Overview", "project-overview"],
+      ["Execution Timeline", "execution-timeline"],
+      ["NOCs", "nocs"],
+      ["Committee Meetings", "committee-meetings"],
+      ["Submitted Reports", "submitted-reports"]
+    ] %>
+    <div class="portal-tabs" role="tablist" aria-label="Project detail sections">
+      <% tabs.each_with_index do |(label, tab_id), index| %>
+        <button type="button"
+          class="portal-tab"
+          data-tabs-target="tab"
+          data-index="<%= index %>"
+          data-tab-id="<%= tab_id %>"
+          data-active="<%= index.zero? %>"
+          data-action="tabs#show"
+          role="tab"><%= label %></button>
+      <% end %>
+    </div>
+
+    <div class="p-5 sm:p-6">
+      <section id="sez-details" data-tabs-target="panel">
+        <div class="section-heading">
+          <div>
+            <h2>SEZ Details</h2>
+            <p>Core zone and company information.</p>
+          </div>
+        </div>
+
+        <% if editable %>
+          <%= form_with model: project, url: developer_project_path, method: :patch, class: "space-y-6" do |form| %>
+            <%= hidden_field_tag :section, "sez-details" %>
+            <div class="form-grid">
+              <div class="md:col-span-2">
+                <%= form.label :zone_name, "Zone Name", class: "field-label" %>
+                <%= form.text_field :zone_name, required: true, maxlength: 255, class: "field" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :zone_developer, "Zone Developer", class: "field-label" %>
+                <%= form.text_field :zone_developer, required: true, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :zone_type, "Zone Type", class: "field-label" %>
+                <%= form.text_field :zone_type, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :ownership_type, "Ownership Type", class: "field-label" %>
+                <%= form.text_field :ownership_type, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :notification_on, "Notification Date", class: "field-label" %>
+                <%= form.date_field :notification_on, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :total_zone_area, "Total Zone Area", class: "field-label" %>
+                <%= form.text_field :total_zone_area, maxlength: 255, class: "field", placeholder: "e.g. 290 acres" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :zone_location, "Zone Location", class: "field-label" %>
+                <%= form.text_field :zone_location, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :zone_status, "Zone Status", class: "field-label" %>
+                <%= form.text_field :zone_status, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :regulatory_framework, "Regulatory Framework", class: "field-label" %>
+                <%= form.text_field :regulatory_framework, maxlength: 255, class: "field" %>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-200 pt-5">
+              <h3 class="mb-4 text-sm font-bold text-slate-800">Company Profile</h3>
+              <div class="form-grid">
+                <div class="md:col-span-2">
+                  <%= form.label :company_name, "Project Company", class: "field-label" %>
+                  <%= form.text_field :company_name, maxlength: 255, class: "field" %>
+                </div>
+                <div>
+                  <%= form.label :company_incorporated_year, "Company Incorporated", class: "field-label" %>
+                  <%= form.number_field :company_incorporated_year, min: 1800, max: Date.current.year + 1, class: "field" %>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <span class="save-hint">Changes are saved to the project record.</span>
+              <%= form.submit "Save SEZ Details", class: "btn-primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <dl class="detail-list">
+            <% {
+              "Zone Name" => project.zone_name,
+              "Zone Developer" => project.zone_developer,
+              "Zone Type" => project.zone_type,
+              "Ownership Type" => project.ownership_type,
+              "Notification Date" => format_date(project.notification_on),
+              "Total Zone Area" => project.total_zone_area,
+              "Zone Location" => project.zone_location,
+              "Zone Status" => project.zone_status,
+              "Regulatory Framework" => project.regulatory_framework,
+              "Project Company" => project.company_name,
+              "Company Incorporated" => project.company_incorporated_year
+            }.each do |label, value| %>
+              <div class="detail-row"><dt><%= label %></dt><dd><%= value.presence || "—" %></dd></div>
+            <% end %>
+          </dl>
+        <% end %>
+      </section>
+
+      <section id="project-overview" class="hidden" data-tabs-target="panel">
+        <div class="section-heading">
+          <div>
+            <h2>Project Overview</h2>
+            <p>Operational and commercial project information.</p>
+          </div>
+        </div>
+
+        <% if editable %>
+          <%= form_with model: project, url: developer_project_path, method: :patch, class: "space-y-6" do |form| %>
+            <%= hidden_field_tag :section, "project-overview" %>
+            <div class="form-grid">
+              <div class="md:col-span-2">
+                <%= form.label :project_name, "Project Name", class: "field-label" %>
+                <%= form.text_field :project_name, required: true, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :project_capacity, "Project Capacity", class: "field-label" %>
+                <%= form.text_field :project_capacity, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :project_cost, "Project Cost", class: "field-label" %>
+                <%= form.text_field :project_cost, maxlength: 255, class: "field" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :project_location, "Project Location", class: "field-label" %>
+                <%= form.text_field :project_location, maxlength: 255, class: "field" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :process_technology, "Process Technology", class: "field-label" %>
+                <%= form.text_field :process_technology, maxlength: 255, class: "field" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :products, "Products", class: "field-label" %>
+                <%= form.text_area :products, rows: 3, maxlength: 3000, class: "field" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :raw_materials, "Raw Materials", class: "field-label" %>
+                <%= form.text_area :raw_materials, rows: 3, maxlength: 3000, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :export_potential, "Export Potential", class: "field-label" %>
+                <%= form.text_field :export_potential, maxlength: 255, class: "field" %>
+              </div>
+              <div>
+                <%= form.label :employment_generation, "Employment Generation", class: "field-label" %>
+                <%= form.text_field :employment_generation, maxlength: 255, class: "field" %>
+              </div>
+              <div class="md:col-span-2">
+                <%= form.label :market_positioning, "Market Positioning", class: "field-label" %>
+                <%= form.text_area :market_positioning, rows: 3, maxlength: 3000, class: "field" %>
+              </div>
+            </div>
+            <div class="form-actions">
+              <span class="save-hint">Keep the project profile current for all users.</span>
+              <%= form.submit "Save Project Overview", class: "btn-primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <dl class="detail-list">
+            <% {
+              "Project Name" => project.project_name,
+              "Project Capacity" => project.project_capacity,
+              "Project Location" => project.project_location,
+              "Project Cost" => project.project_cost,
+              "Process Technology" => project.process_technology,
+              "Products" => project.products,
+              "Raw Materials" => project.raw_materials,
+              "Export Potential" => project.export_potential,
+              "Market Positioning" => project.market_positioning,
+              "Employment Generation" => project.employment_generation
+            }.each do |label, value| %>
+              <div class="detail-row"><dt><%= label %></dt><dd><%= value.presence || "—" %></dd></div>
+            <% end %>
+          </dl>
+        <% end %>
+      </section>
+
+      <section id="execution-timeline" class="hidden" data-tabs-target="panel">
+        <div class="section-heading">
+          <div>
+            <h2>Project Execution Timeline</h2>
+            <p>Key planned and actual project milestone dates.</p>
+          </div>
+        </div>
+
+        <% if editable %>
+          <%= form_with model: project, url: developer_project_path, method: :patch, class: "space-y-6" do |form| %>
+            <%= hidden_field_tag :section, "execution-timeline" %>
+            <div class="form-grid md:grid-cols-3">
+              <% [
+                [:notice_to_proceed_on, "Notice to Proceed"],
+                [:engineering_start_on, "Engineering Start"],
+                [:engineering_end_on, "Engineering End"],
+                [:procurement_start_on, "Procurement Start"],
+                [:procurement_end_on, "Procurement End"],
+                [:construction_start_on, "Construction Start"],
+                [:construction_end_on, "Construction End"],
+                [:mechanical_completion_on, "Mechanical Completion"],
+                [:commissioning_start_on, "Commissioning Start"],
+                [:commissioning_end_on, "Commissioning End"],
+                [:commercial_operations_on, "Commercial Operations"]
+              ].each do |attribute, label| %>
+                <div>
+                  <%= form.label attribute, label, class: "field-label" %>
+                  <%= form.date_field attribute, class: "field" %>
+                </div>
+              <% end %>
+            </div>
+            <div class="form-actions">
+              <span class="save-hint">Dates remain available to Authority in read-only mode.</span>
+              <%= form.submit "Save Execution Timeline", class: "btn-primary" %>
+            </div>
+          <% end %>
+        <% else %>
+          <dl class="detail-list">
+            <% {
+              "Notice to Proceed" => project.notice_to_proceed_on,
+              "Engineering Start" => project.engineering_start_on,
+              "Engineering End" => project.engineering_end_on,
+              "Procurement Start" => project.procurement_start_on,
+              "Procurement End" => project.procurement_end_on,
+              "Construction Start" => project.construction_start_on,
+              "Construction End" => project.construction_end_on,
+              "Mechanical Completion" => project.mechanical_completion_on,
+              "Commissioning Start" => project.commissioning_start_on,
+              "Commissioning End" => project.commissioning_end_on,
+              "Commercial Operations" => project.commercial_operations_on
+            }.each do |label, value| %>
+              <div class="detail-row"><dt><%= label %></dt><dd><%= format_date(value) %></dd></div>
+            <% end %>
+          </dl>
+        <% end %>
+      </section>
+
+      <section id="nocs" class="hidden" data-tabs-target="panel">
+        <div class="section-heading">
+          <div>
+            <h2>NOCs Attained</h2>
+            <p>NOC dates and approved PDF copies.</p>
+          </div>
+        </div>
+
+        <% if editable %>
+          <details class="inline-editor mb-5">
+            <summary>+ Add NOC</summary>
+            <%= form_with model: [:developer, noc], class: "mt-4 grid gap-4 md:grid-cols-2" do |form| %>
+              <div class="md:col-span-2"><%= form.label :description, class: "field-label" %><%= form.text_field :description, required: true, maxlength: 250, class: "field" %></div>
+              <div><%= form.label :applied_on, "Applied date", class: "field-label" %><%= form.date_field :applied_on, required: true, class: "field" %></div>
+              <div><%= form.label :attained_on, "Attained date", class: "field-label" %><%= form.date_field :attained_on, class: "field" %></div>
+              <div class="md:col-span-2"><%= form.label :document, "NOC PDF (max 10 MB)", class: "field-label" %><%= form.file_field :document, accept: "application/pdf", class: "field" %></div>
+              <div class="md:col-span-2"><%= form.submit "Save NOC", class: "btn-primary" %></div>
+            <% end %>
+          </details>
+        <% end %>
+
+        <div class="table-wrap" data-controller="datatable">
+          <table class="data-table" data-datatable-target="table">
+            <thead><tr><th>Sr</th><th>NOC Description</th><th>Applied Date</th><th>Attained Date</th><th>Attachment</th><% if editable %><th>Action</th><% end %></tr></thead>
+            <tbody>
+              <% nocs.each_with_index do |record, index| %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td class="font-medium text-slate-900"><%= record.description %></td>
+                  <td><%= format_date(record.applied_on) %></td>
+                  <td><%= format_date(record.attained_on) %></td>
+                  <td>
+                    <% if record.document.attached? %>
+                      <% path = editable ? download_developer_noc_path(record) : download_authority_noc_path(record) %>
+                      <%= table_action_link "Download PDF", path, icon: "download" %>
+                    <% else %>—<% end %>
+                  </td>
+                  <% if editable %>
+                    <td class="min-w-44">
+                      <details class="row-editor">
+                        <summary class="table-action" title="Edit" aria-label="Edit"><%= render "shared/portal_icon", name: "edit" %></summary>
+                        <%= form_with model: [:developer, record], class: "mt-3 space-y-2" do |form| %>
+                          <%= form.text_field :description, required: true, maxlength: 250, class: "field", aria: { label: "NOC description" } %>
+                          <%= form.date_field :applied_on, required: true, class: "field", aria: { label: "NOC applied date" } %>
+                          <%= form.date_field :attained_on, class: "field", aria: { label: "NOC attained date" } %>
+                          <%= form.file_field :document, accept: "application/pdf", class: "field", aria: { label: "Replace NOC PDF" } %>
+                          <%= form.submit "Update NOC", class: "btn-secondary" %>
+                        <% end %>
+                      </details>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+              <% if nocs.empty? %><tr><td colspan="6" class="text-center text-slate-500">No NOCs recorded.</td></tr><% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="committee-meetings" class="hidden" data-tabs-target="panel">
+        <div class="section-heading">
+          <div>
+            <h2>SEZ Committee Meetings / Minutes</h2>
+            <p>Committee meetings and minutes for download.</p>
+          </div>
+        </div>
+
+        <% if editable %>
+          <details class="inline-editor mb-5">
+            <summary>+ Add Committee Meeting</summary>
+            <%= form_with model: [:developer, committee_meeting], class: "mt-4 grid gap-4 md:grid-cols-2" do |form| %>
+              <div><%= form.label :committee_name, "SEZ Committee / Title", class: "field-label" %><%= form.text_field :committee_name, required: true, maxlength: 200, class: "field" %></div>
+              <div><%= form.label :meeting_on, "Meeting date", class: "field-label" %><%= form.date_field :meeting_on, required: true, class: "field" %></div>
+              <div class="md:col-span-2"><%= form.label :minutes, "Minutes PDF (max 10 MB)", class: "field-label" %><%= form.file_field :minutes, accept: "application/pdf", class: "field" %></div>
+              <div class="md:col-span-2"><%= form.submit "Save Meeting", class: "btn-primary" %></div>
+            <% end %>
+          </details>
+        <% end %>
+
+        <div class="table-wrap" data-controller="datatable">
+          <table class="data-table" data-datatable-target="table">
+            <thead><tr><th>Sr</th><th>SEZ Committee</th><th>Meeting Date</th><th>Minutes</th><% if editable %><th>Action</th><% end %></tr></thead>
+            <tbody>
+              <% committee_meetings.each_with_index do |meeting, index| %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td class="font-medium text-slate-900"><%= meeting.committee_name %></td>
+                  <td><%= format_date(meeting.meeting_on) %></td>
+                  <td>
+                    <% if meeting.minutes.attached? %>
+                      <% path = editable ? download_developer_committee_meeting_path(meeting) : download_authority_committee_meeting_path(meeting) %>
+                      <%= table_action_link "Download Minutes", path, icon: "download" %>
+                    <% else %>—<% end %>
+                  </td>
+                  <% if editable %>
+                    <td class="min-w-44">
+                      <details class="row-editor">
+                        <summary class="table-action" title="Edit" aria-label="Edit"><%= render "shared/portal_icon", name: "edit" %></summary>
+                        <%= form_with model: [:developer, meeting], class: "mt-3 space-y-2" do |form| %>
+                          <%= form.text_field :committee_name, required: true, maxlength: 200, class: "field", aria: { label: "Committee title" } %>
+                          <%= form.date_field :meeting_on, required: true, class: "field", aria: { label: "Meeting date" } %>
+                          <%= form.file_field :minutes, accept: "application/pdf", class: "field", aria: { label: "Replace minutes PDF" } %>
+                          <%= form.submit "Update Meeting", class: "btn-secondary" %>
+                        <% end %>
+                      </details>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+              <% if committee_meetings.empty? %><tr><td colspan="5" class="text-center text-slate-500">No committee meetings recorded.</td></tr><% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="submitted-reports" class="hidden" data-tabs-target="panel">
+        <div class="section-heading">
+          <div>
+            <h2>Submitted Development Status Reports</h2>
+            <p>Latest submitted reports first.</p>
+          </div>
+        </div>
+        <div class="table-wrap" data-controller="datatable">
+          <table class="data-table" data-datatable-target="table">
+            <thead><tr><th>Sr</th><th>Date of Submission</th><th>DSR Duration</th><th>Status</th><th>Attachment</th><th>Action</th></tr></thead>
+            <tbody>
+              <% recent_reports.each_with_index do |report, index| %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= format_date(report.report_date) %></td>
+                  <td><%= report.reporting_month_label %></td>
+                  <td><%= render "shared/status_badge", status: report.status %></td>
+                  <td>
+                    <% if report.attachment.attached? %>
+                      <% attachment_path = editable ? download_attachment_developer_development_report_path(report) : download_attachment_authority_development_report_path(report) %>
+                      <%= table_action_link "Download PDF", attachment_path, icon: "download" %>
+                    <% else %>—<% end %>
+                  </td>
+                  <td>
+                    <% path = editable ? developer_development_report_path(report) : authority_development_report_path(report) %>
+                    <%= table_action_link "View", path, icon: "view" %>
+                  </td>
+                </tr>
+              <% end %>
+              <% if recent_reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No submitted reports.</td></tr><% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,63 @@
+import { chromium } from 'playwright'
+import assert from 'node:assert/strict'
+const baseURL = process.env.PORTAL_BASE_URL || 'http://localhost:3000'
+const browser=await chromium.launch({...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}), headless:true})
+const page=await browser.newPage({viewport:{width:1440,height:1000}})
+page.setDefaultTimeout(10000)
+const errors=[];page.on('pageerror',e=>errors.push(e.message))
+try {
+await page.goto(baseURL+'/session/new')
+await page.getByLabel('Username or email').fill(process.env.PORTAL_SUBMITTER_EMAIL || 'submitter@sapphire.pk')
+await page.getByLabel('Password',{exact:true}).fill(process.env.PORTAL_PASSWORD || 'ChangeMe!12345')
+await page.getByRole('button',{name:'Sign in as Developer'}).click()
+await page.waitForURL(/developer/)
+for (const path of ['/developer/development_reports','/developer/reviews','/developer/submission_records','/developer/project']) {
+ await page.goto(baseURL+path)
+ await page.waitForTimeout(400)
+ console.log(path,await page.locator('.datatable-input').count(),'search fields')
+ assert.ok(await page.locator('.datatable-input').count()>0)
+}
+await page.goto(baseURL+'/developer/development_reports')
+await page.locator('.datatable-input').first().waitFor()
+await page.evaluate(()=>{
+ const wrap=document.createElement('div');wrap.className='table-wrap';wrap.dataset.controller='datatable';wrap.id='test-list'
+ wrap.innerHTML='<table data-datatable-target="table" class="data-table"><thead><tr><th>Name</th><th>Report Date</th><th>Action</th></tr></thead><tbody>'+Array.from({length:25},(_,i)=>`<tr><td>Record ${i}</td><td>${String(25-i).padStart(2,'0')}-09-2026</td><td><a href="#" aria-label="View">View</a></td></tr>`).join('')+'</tbody></table>';document.body.append(wrap)
+ const editor=document.createElement('div');editor.id='test-editor';editor.dataset.controller='datatable';editor.innerHTML='<table data-datatable-target="table"><thead><tr><th>Name</th><th>Value</th></tr></thead><tbody><tr><td>Road</td><td><input name="percent" value="30"></td></tr><tr><td>Water</td><td><input value="40"></td></tr></tbody></table>';document.body.append(editor)
+})
+await page.locator('#test-list .datatable-input').waitFor()
+assert.equal(await page.locator('#test-list tbody tr').count(),10)
+await page.locator('#test-list .datatable-selector').selectOption('25')
+assert.equal(await page.locator('#test-list tbody tr').count(),25)
+await page.locator('#test-list .datatable-input').fill('Record 24')
+await page.waitForFunction(()=>document.querySelectorAll('#test-list tbody tr').length===1)
+assert.equal(await page.locator('#test-list tbody tr').count(),1)
+await page.locator('#test-list .datatable-input').fill('')
+await page.waitForFunction(()=>document.querySelectorAll('#test-list tbody tr').length===25)
+await page.locator('#test-list th').nth(1).locator('button').click()
+assert.equal(await page.locator('#test-list tbody tr').first().locator('td').nth(1).textContent(),'01-09-2026')
+await page.locator('#test-editor input[name="percent"]').fill('72.25')
+await page.locator('#test-editor .datatable-input').fill('Water')
+assert.equal(await page.locator('#test-editor tbody tr').first().evaluate(el=>el.hidden),true)
+await page.locator('#test-editor .datatable-input').fill('')
+assert.equal(await page.locator('#test-editor input[name="percent"]').inputValue(),'72.25')
+await page.evaluate(()=>{window.mutations=0;window.observer=new MutationObserver(records=>window.mutations+=records.length);window.observer.observe(document.querySelector('#test-list'),{childList:true,subtree:true,attributes:true})})
+await page.waitForTimeout(1500)
+assert.equal(await page.evaluate(()=>window.mutations),0)
+await page.evaluate(()=>{window.observer.disconnect();document.dispatchEvent(new Event('turbo:before-cache'))})
+assert.equal(await page.locator('#test-list .datatable-wrapper').count(),0)
+for (let i=0;i<3;i++) {
+ await page.evaluate(()=>window.Turbo.visit('/developer/reviews'))
+ await page.waitForURL(/developer\/reviews/)
+ await page.locator('.datatable-input').first().waitFor()
+ assert.equal(await page.locator('.datatable-wrapper').count(),2)
+ await page.evaluate(()=>window.Turbo.visit('/developer/development_reports'))
+ await page.waitForURL(/developer\/development_reports/)
+ await page.locator('.datatable-input').first().waitFor()
+ assert.equal(await page.locator('.datatable-wrapper').count(),1)
+}
+await page.goBack()
+await page.locator('.datatable-input').first().waitFor()
+assert.equal(await page.locator('.datatable-wrapper').count(),2)
+assert.deepEqual(errors,[])
+console.log('Passed: all developer pages, search, page size, date sorting, preserved edits, no idle DOM loop, Turbo cleanup, no JS errors')
+} finally {await browser.close()}

@@ -1,0 +1,65 @@
+<div class="portal-classic-shell" data-controller="sidebar">
+  <button type="button"
+    class="portal-sidebar-overlay hidden lg:hidden"
+    data-sidebar-target="overlay"
+    data-action="sidebar#close"
+    aria-label="Close navigation"></button>
+
+  <aside class="portal-sidebar -translate-x-full lg:translate-x-0"
+    data-sidebar-target="panel">
+    <div class="portal-brand">
+      <%= link_to(portal_home_path(current_user), class: "portal-brand-link") do %>
+        <span class="portal-brand-logo">
+          <%= image_tag "sapphire-logo.png", alt: "Sapphire Chemicals", class: "h-auto w-full" %>
+        </span>
+      <% end %>
+    </div>
+
+    <nav class="portal-sidebar-nav" aria-label="Primary navigation">
+      <% if current_user.developer? %>
+        <%= render "shared/sidebar_link", label: "Dashboard", path: developer_root_path, icon: "dashboard", active: controller_path == "developer/dashboard" %>
+        <%= render "shared/sidebar_link", label: "Project Details", path: developer_project_path, icon: "project", active: controller_path == "developer/projects" || controller_path == "developer/nocs" || controller_path == "developer/committee_meetings" %>
+        <%= render "shared/sidebar_link", label: "Progress Update", path: developer_development_reports_path, icon: "progress", active: controller_path == "developer/development_reports" %>
+        <%= render "shared/sidebar_link", label: "Review Center", path: developer_reviews_path, icon: "review", active: controller_path == "developer/reviews" %>
+        <%= render "shared/sidebar_link", label: "Submission Records", path: developer_submission_records_path, icon: "records", active: controller_path == "developer/submission_records" %>
+      <% else %>
+        <%= render "shared/sidebar_link", label: "Dashboard", path: authority_root_path, icon: "dashboard", active: controller_path == "authority/dashboard" %>
+        <%= render "shared/sidebar_link", label: "Project Details", path: authority_project_path, icon: "project", active: controller_path == "authority/projects" || controller_path == "authority/nocs" || controller_path == "authority/committee_meetings" %>
+        <%= render "shared/sidebar_link", label: "Progress Updates", path: authority_development_reports_path, icon: "progress", active: controller_path == "authority/development_reports" %>
+      <% end %>
+    </nav>
+
+    <div class="portal-sidebar-account">
+      <%= render "shared/profile_menu", placement: "sidebar" %>
+    </div>
+  </aside>
+
+  <div class="portal-classic-main">
+    <header class="portal-header">
+      <div class="portal-header-inner">
+        <button type="button" class="portal-mobile-menu lg:hidden" data-action="sidebar#open" aria-label="Open navigation">
+          <%= render "shared/portal_icon", name: "menu", class_name: "h-6 w-6" %>
+        </button>
+
+        <div class="hidden min-w-0 items-center gap-2 text-sm font-medium text-slate-500 lg:flex">
+          <span class="truncate">Sapphire SVA SEZ</span>
+          <span class="text-slate-300">/</span>
+          <span class="truncate">Development Monitoring Portal</span>
+        </div>
+
+        <div class="ml-auto flex items-center gap-3">
+          <%= link_to edit_account_appearance_path, class: "header-icon-link", title: "Appearance settings" do %>
+            <%= render "shared/portal_icon", name: "appearance", class_name: "h-5 w-5" %>
+            <span class="hidden xl:inline">Appearance</span>
+          <% end %>
+          <div class="hidden sm:block lg:hidden">
+            <%= render "shared/profile_menu", placement: "top" %>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <%= render "shared/flash_messages" %>
+    <main class="portal-content-scroll"><%= content %></main>
+  </div>
+</div>

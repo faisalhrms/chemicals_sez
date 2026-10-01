@@ -1,0 +1,30 @@
+<% content_for :title, "Progress Updates" %>
+<div class="page-shell">
+  <div class="mb-5">
+    <h1 class="page-title">Progress Updates</h1>
+    <p class="page-subtitle">Approved Development Status Reports are read-only and shown latest first.</p>
+  </div>
+
+  <%= form_with url: authority_development_reports_path, method: :get, class: "card mb-5 flex items-end gap-4 p-4", data: { controller: "auto-submit" } do |form| %>
+    <div class="w-full max-w-xs"><%= form.label :month, "Select Month", class: "field-label" %><%= form.month_field :month, value: @month.strftime("%Y-%m"), class: "field", data: { action: "change->auto-submit#submit" } %></div>
+  <% end %>
+
+  <div class="table-wrap" data-controller="datatable">
+    <table class="data-table" data-datatable-target="table">
+      <thead><tr><th>#</th><th>Report Date</th><th>Reporting Month</th><th>Status</th><th>Approved At</th><th>Action</th></tr></thead>
+      <tbody>
+        <% @reports.each_with_index do |report, index| %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td class="font-semibold text-slate-900"><%= format_date(report.report_date) %></td>
+            <td><%= report.reporting_month_label %></td>
+            <td><%= render "shared/status_badge", status: report.status %></td>
+            <td><%= report.approved_at&.in_time_zone&.strftime("%d-%m-%Y %H:%M") || "—" %></td>
+            <td><%= table_action_link "View", authority_development_report_path(report), icon: "view" %></td>
+          </tr>
+        <% end %>
+        <% if @reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No approved reports for this month.</td></tr><% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

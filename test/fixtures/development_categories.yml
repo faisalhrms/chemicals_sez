@@ -1,0 +1,48 @@
+roads_internal:
+  name: Roads (Internal)
+  position: 1
+  active: true
+access_roads:
+  name: Access Roads
+  position: 2
+  active: true
+boundary_wall:
+  name: Boundary Wall
+  position: 3
+  active: true
+sewerage:
+  name: Sewerage / drainage
+  position: 4
+  active: true
+wastewater:
+  name: Wastewater Treatment
+  position: 5
+  active: true
+medical:
+  name: Medical Facility
+  position: 6
+  active: true
+electricity:
+  name: Electricity
+  position: 7
+  active: true
+gas:
+  name: Gas (Industrial & Commercial)
+  position: 8
+  active: true
+water:
+  name: Water
+  position: 9
+  active: true
+security:
+  name: Security
+  position: 10
+  active: true
+fire:
+  name: Fire Fighting
+  position: 11
+  active: true
+fiber:
+  name: Telephone / DSL / Fiber
+  position: 12
+  active: true

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+bin/rails tailwindcss:watch &
+CSS_PID=$!
+trap 'kill "$CSS_PID" 2>/dev/null || true' EXIT INT TERM
+
+exec bin/rails server

@@ -1,0 +1,14 @@
+<div class="page-shell max-w-xl">
+  <div class="card p-6">
+    <h1 class="text-2xl font-bold text-brand-800">Reset password</h1>
+    <p class="mt-2 text-sm text-slate-600">Enter your account email. For security, the response is the same whether or not the account exists.</p>
+    <%= form_with url: passwords_path, class: "mt-6 space-y-4" do |form| %>
+      <div>
+        <%= form.label :email_address, "Email address", class: "field-label" %>
+        <%= form.email_field :email_address, required: true, autocomplete: "email", class: "field" %>
+      </div>
+      <%= form.submit "Send reset instructions", class: "btn-primary" %>
+      <%= link_to "Back to sign in", new_session_path, class: "btn-secondary" %>
+    <% end %>
+  </div>
+</div>

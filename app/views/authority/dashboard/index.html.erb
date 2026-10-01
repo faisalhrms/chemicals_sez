@@ -1,0 +1,61 @@
+<% content_for :title, "Authority Portal" %>
+<div class="page-shell dashboard-page">
+  <div class="dashboard-shell">
+    <% if current_user.modern_topbar? %>
+      <section class="modern-dashboard-hero mb-7">
+        <%= image_tag "industrial-campus.jpg", alt: "", class: "modern-dashboard-hero-image", aria: { hidden: true } %>
+        <div class="modern-dashboard-hero-overlay" aria-hidden="true"></div>
+        <div class="modern-dashboard-hero-copy">
+          <p class="hero-kicker">Authority Workspace</p>
+          <h1>Welcome, <%= current_user.name %></h1>
+          <p>Review approved SEZ project information and development progress.</p>
+        </div>
+      </section>
+    <% else %>
+      <div class="classic-dashboard-heading">
+        <p class="hero-kicker">Authority Workspace</p>
+        <h1 class="page-title">Welcome, <%= current_user.name %></h1>
+        <p class="page-subtitle">View approved project information and progress updates.</p>
+      </div>
+    <% end %>
+
+    <div class="dashboard-grid authority-dashboard-grid">
+      <%= render "shared/module_card",
+        title: "Project Details",
+        description: "View SEZ and project information, NOCs and committee minutes.",
+        path: authority_project_path,
+        icon: "project",
+        tone: "blue" %>
+
+      <%= render "shared/module_card",
+        title: "Progress Updates",
+        description: "View approved Development Status Reports and export to Excel.",
+        path: authority_development_reports_path,
+        icon: "progress",
+        tone: "green" %>
+    </div>
+
+    <section class="dashboard-recent card overflow-hidden">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 class="text-sm font-bold text-slate-800">Recent Approved Reports</h2>
+        <%= link_to "View All", authority_development_reports_path, class: "text-sm font-semibold text-brand-700 hover:underline" %>
+      </div>
+      <div class="table-wrap border-0 rounded-none" data-controller="datatable">
+        <table class="data-table" data-datatable-target="table">
+          <thead><tr><th>Reporting Month</th><th>Report Date</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <% @recent_reports.each do |report| %>
+              <tr>
+                <td class="font-medium text-slate-900"><%= report.reporting_month_label %></td>
+                <td><%= format_date(report.report_date) %></td>
+                <td><%= render "shared/status_badge", status: report.status %></td>
+                <td><%= table_action_link "View", authority_development_report_path(report), icon: "view" %></td>
+              </tr>
+            <% end %>
+            <% if @recent_reports.empty? %><tr><td colspan="4" class="text-center text-slate-500">No approved reports yet.</td></tr><% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>

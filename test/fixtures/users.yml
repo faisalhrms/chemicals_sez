@@ -1,0 +1,20 @@
+submitter:
+  name: Developer Submitter
+  email_address: submitter@example.com
+  password_digest: <%= BCrypt::Password.create("StrongPassword!123") %>
+  role: 0
+  active: true
+
+reviewer:
+  name: Developer Reviewer
+  email_address: reviewer@example.com
+  password_digest: <%= BCrypt::Password.create("StrongPassword!123") %>
+  role: 1
+  active: true
+
+authority:
+  name: Authority User
+  email_address: authority@example.com
+  password_digest: <%= BCrypt::Password.create("StrongPassword!123") %>
+  role: 2
+  active: true

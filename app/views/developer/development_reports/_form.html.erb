@@ -1,0 +1,59 @@
+<%= form_with model: [:developer, report], class: "space-y-5" do |form| %>
+  <% if report.errors.any? %>
+    <div class="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"><%= report.errors.full_messages.to_sentence %></div>
+  <% end %>
+
+  <div class="card grid gap-4 p-4 sm:grid-cols-3">
+    <div><div class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Reporting Month</div><div class="mt-1 text-sm font-semibold text-slate-900"><%= report.reporting_month_label %></div></div>
+    <div><div class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Report Date</div><div class="mt-1 text-sm font-semibold text-slate-900"><%= format_date(report.report_date) %></div></div>
+    <div><div class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Status</div><div class="mt-1"><%= render "shared/status_badge", status: report.status %></div></div>
+  </div>
+
+  <div class="table-wrap" data-controller="datatable">
+    <table class="data-table" data-datatable-target="table">
+      <thead>
+        <tr>
+          <th class="w-12">#</th>
+          <th>Description</th>
+          <th>% Completion<br><span class="normal-case font-normal">(As of <%= format_date(report.report_date) %>)</span></th>
+          <th>Expected Date of Completion</th>
+          <th>Reasons for Delay</th>
+          <th>Support Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= form.fields_for :items do |item_form| %>
+          <% item = item_form.object %>
+          <tr>
+            <td><%= item.development_category.position %></td>
+            <td class="min-w-44 font-medium text-slate-900"><%= item.development_category.name %></td>
+            <td class="min-w-32"><%= item_form.number_field :completion_percentage, min: 0, max: 100, step: 0.01, class: "field-compact", data: { controller: "percentage", action: "input->percentage#clamp change->percentage#clamp" }, aria: { label: "#{item.development_category.name} completion percentage" } %></td>
+            <td class="min-w-44"><%= item_form.date_field :expected_completion_on, class: "field-compact", aria: { label: "#{item.development_category.name} expected completion date" } %></td>
+            <td class="min-w-48"><%= item_form.text_field :delay_reason, maxlength: 1000, class: "field-compact", placeholder: "Enter details", aria: { label: "#{item.development_category.name} reasons for delay" } %></td>
+            <td class="min-w-48"><%= item_form.text_field :support_required, maxlength: 1000, class: "field-compact", placeholder: "Enter details", aria: { label: "#{item.development_category.name} support required" } %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <details class="card p-4">
+    <summary class="cursor-pointer text-sm font-semibold text-slate-700">Optional DSR PDF attachment</summary>
+    <div class="mt-4 max-w-xl">
+      <%= form.label :attachment, "Submitted DSR PDF (max 10 MB)", class: "field-label" %>
+      <%= form.file_field :attachment, accept: "application/pdf", class: "field" %>
+      <% if report.attachment.attached? %><p class="mt-2 text-xs text-slate-500">Current: <%= report.attachment.filename %></p><% end %>
+    </div>
+  </details>
+
+  <div class="flex flex-wrap items-center justify-end gap-3">
+    <%= link_to "Back", developer_development_reports_path(month: report.reporting_month.strftime("%Y-%m")), class: "btn-secondary" %>
+    <%= form.submit "Save Draft", class: "btn-secondary" %>
+  </div>
+<% end %>
+
+<% if policy(report).submit_for_review? %>
+  <div class="mt-4 flex justify-end border-t border-slate-200 pt-4">
+    <%= button_to "Submit for Review", submit_for_review_developer_development_report_path(report), method: :post, class: "btn-primary", form: { data: { turbo_confirm: "Submit this report for review? It will become read-only until it is reverted." } } %>
+  </div>
+<% end %>

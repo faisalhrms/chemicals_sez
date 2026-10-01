@@ -1,0 +1,24 @@
+<% content_for :title, "New Progress Report" %>
+<div class="page-shell">
+  <div class="mb-5">
+    <h1 class="page-title">Create Progress Report</h1>
+    <p class="page-subtitle">Select reporting month and report date. Latest approved figures are copied automatically.</p>
+  </div>
+
+  <div class="card max-w-3xl p-5 sm:p-6">
+    <%= form_with url: developer_development_reports_path, class: "grid gap-5 sm:grid-cols-2" do |form| %>
+      <div>
+        <%= form.label :reporting_month, "Reporting Month", class: "field-label" %>
+        <%= form.month_field :reporting_month, value: Date.current.strftime("%Y-%m"), required: true, class: "field" %>
+      </div>
+      <div>
+        <%= form.label :report_date, "Report Date", class: "field-label" %>
+        <%= form.date_field :report_date, value: Date.current, required: true, class: "field" %>
+      </div>
+      <div class="sm:col-span-2 flex flex-wrap gap-3 border-t border-slate-100 pt-4">
+        <%= form.submit "Create Draft", class: "btn-primary" %>
+        <%= link_to "Cancel", developer_development_reports_path, class: "btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

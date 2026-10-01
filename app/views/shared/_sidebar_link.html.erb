@@ -1,0 +1,8 @@
+<%= link_to path,
+  class: "portal-nav-link #{active ? 'portal-nav-link-active' : ''}" do %>
+  <%= render "shared/portal_icon", name: icon, class_name: "h-5 w-5 shrink-0" %>
+  <span><%= label %></span>
+  <% if local_assigns[:badge].present? %>
+    <span class="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-bold text-amber-800"><%= badge %></span>
+  <% end %>
+<% end %>

@@ -1,0 +1,41 @@
+<% content_for :title, "Progress Update" %>
+<div class="page-shell">
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="page-title">Progress Update</h1>
+      <p class="page-subtitle">Create and manage Development Status Reports month-wise.</p>
+    </div>
+    <%= link_to "+ New Progress Report", new_developer_development_report_path, class: "btn-primary" %>
+  </div>
+
+  <%= form_with url: developer_development_reports_path, method: :get, class: "card mb-5 flex flex-wrap items-end gap-4 p-4", data: { controller: "auto-submit" } do |form| %>
+    <div class="w-full max-w-xs">
+      <%= form.label :month, "Reporting Month", class: "field-label" %>
+      <%= form.month_field :month, value: @month.strftime("%Y-%m"), class: "field", data: { action: "change->auto-submit#submit" } %>
+    </div>
+  <% end %>
+
+  <div class="table-wrap" data-controller="datatable">
+    <table class="data-table" data-datatable-target="table">
+      <thead><tr><th>#</th><th>Report Date</th><th>Status</th><th>Submitted By</th><th>Last Updated</th><th>Actions</th></tr></thead>
+      <tbody>
+        <% @reports.each_with_index do |report, index| %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td class="font-semibold text-slate-900"><%= format_date(report.report_date) %></td>
+            <td><%= render "shared/status_badge", status: report.status %></td>
+            <td><%= report.submitted_by&.name || "—" %></td>
+            <td><%= report.updated_at.in_time_zone.strftime("%d-%m-%Y") %></td>
+            <td class="whitespace-nowrap">
+              <%= table_action_link "View", developer_development_report_path(report), icon: "view" %>
+              <% if policy(report).update? %>
+                <%= table_action_link "Edit", edit_developer_development_report_path(report), icon: "edit" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No reports found for this month.</td></tr><% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<div class="page-shell max-w-xl">
+  <div class="card p-6">
+    <h1 class="text-2xl font-bold text-brand-800">Choose a new password</h1>
+    <% if @user.errors.any? %>
+      <div class="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"><%= @user.errors.full_messages.to_sentence %></div>
+    <% end %>
+    <%= form_with model: @user, url: password_path(token: params[:token]), method: :patch, class: "mt-6 space-y-4" do |form| %>
+      <div>
+        <%= form.label :password, "New password", class: "field-label" %>
+        <%= form.password_field :password, required: true, minlength: 12, autocomplete: "new-password", class: "field" %>
+      </div>
+      <div>
+        <%= form.label :password_confirmation, class: "field-label" %>
+        <%= form.password_field :password_confirmation, required: true, minlength: 12, autocomplete: "new-password", class: "field" %>
+      </div>
+      <%= form.submit "Update password", class: "btn-primary" %>
+    <% end %>
+  </div>
+</div>

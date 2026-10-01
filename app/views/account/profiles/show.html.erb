@@ -1,0 +1,71 @@
+<% content_for :title, "My Profile" %>
+<div class="page-shell account-shell">
+  <div class="mb-6">
+    <h1 class="page-title">My Profile</h1>
+    <p class="page-subtitle">Manage your personal profile information and photo.</p>
+  </div>
+
+  <%= render "shared/account_tabs" %>
+
+  <div class="account-grid mt-5">
+    <section class="card p-5 sm:p-6">
+      <div class="mb-6 flex items-center gap-4">
+        <%= profile_avatar(@user, class_name: "h-20 w-20") %>
+        <div>
+          <h2 class="text-base font-bold text-slate-900"><%= @user.name %></h2>
+          <p class="mt-1 text-sm text-slate-500"><%= @user.job_title.presence || workspace_label(@user) %></p>
+          <p class="mt-1 text-xs text-slate-400"><%= @user.email_address %></p>
+        </div>
+      </div>
+
+      <%= form_with model: @user, url: account_profile_path, method: :patch, class: "space-y-5" do |form| %>
+        <div>
+          <%= form.label :avatar, "Profile photo", class: "field-label" %>
+          <%= form.file_field :avatar, accept: "image/jpeg,image/png,image/webp", class: "field" %>
+          <p class="mt-1 text-xs text-slate-400">JPG, PNG or WebP. Maximum 3 MB.</p>
+          <% if @user.avatar.attached? %>
+            <label class="mt-3 inline-flex items-center gap-2 text-sm text-slate-600">
+              <%= check_box_tag :remove_avatar, "1", false, class: "rounded border-slate-300" %>
+              Remove current photo
+            </label>
+          <% end %>
+        </div>
+
+        <div class="form-grid">
+          <div class="md:col-span-2">
+            <%= form.label :name, "Full name", class: "field-label" %>
+            <%= form.text_field :name, required: true, maxlength: 120, class: "field", autocomplete: "name" %>
+          </div>
+          <div>
+            <%= form.label :phone, "Phone", class: "field-label" %>
+            <%= form.telephone_field :phone, maxlength: 40, class: "field", autocomplete: "tel", placeholder: "+92 ..." %>
+          </div>
+          <div>
+            <%= form.label :job_title, "Job title", class: "field-label" %>
+            <%= form.text_field :job_title, maxlength: 120, class: "field", placeholder: "Associate Officer" %>
+          </div>
+          <div class="md:col-span-2">
+            <label class="field-label">Email address</label>
+            <div class="read-only-field"><%= @user.email_address %></div>
+            <p class="mt-1 text-xs text-slate-400">Your sign-in email is managed separately for account security.</p>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <span class="save-hint">Only your own profile can be updated here.</span>
+          <%= form.submit "Save Profile", class: "btn-primary" %>
+        </div>
+      <% end %>
+    </section>
+
+    <aside class="card p-5 sm:p-6">
+      <h2 class="text-sm font-bold text-slate-900">Account</h2>
+      <dl class="mt-4 space-y-4 text-sm">
+        <div><dt class="text-xs font-semibold uppercase tracking-wide text-slate-400">Workspace</dt><dd class="mt-1 font-medium text-slate-700"><%= workspace_label(@user) %></dd></div>
+        <div><dt class="text-xs font-semibold uppercase tracking-wide text-slate-400">Role</dt><dd class="mt-1 font-medium text-slate-700"><%= @user.role.humanize %></dd></div>
+        <div><dt class="text-xs font-semibold uppercase tracking-wide text-slate-400">Portal layout</dt><dd class="mt-1 font-medium text-slate-700"><%= @user.portal_layout.humanize %></dd></div>
+      </dl>
+      <%= link_to "Change appearance", edit_account_appearance_path, class: "btn-secondary mt-6 w-full" %>
+    </aside>
+  </div>
+</div>

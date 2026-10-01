@@ -1,0 +1,34 @@
+<div class="modern-portal">
+  <header class="modern-header">
+    <div class="modern-header-inner">
+      <%= link_to portal_home_path(current_user), class: "modern-brand" do %>
+        <%= image_tag "sapphire-logo.png", alt: "Sapphire Chemicals", class: "h-9 w-auto" %>
+        <span class="hidden sm:block">
+          <span class="block text-xs font-bold tracking-tight text-slate-900">SVA SEZ</span>
+          <span class="block text-[10px] text-slate-400">Monitoring Portal</span>
+        </span>
+      <% end %>
+
+      <nav class="modern-nav" aria-label="Primary navigation">
+        <% if current_user.developer? %>
+          <%= link_to "Home", developer_root_path, class: "modern-nav-link #{controller_path == 'developer/dashboard' ? 'modern-nav-link-active' : ''}" %>
+          <%= link_to "Project Details", developer_project_path, class: "modern-nav-link #{controller_path.in?(['developer/projects', 'developer/nocs', 'developer/committee_meetings']) ? 'modern-nav-link-active' : ''}" %>
+          <%= link_to "Progress Update", developer_development_reports_path, class: "modern-nav-link #{controller_path == 'developer/development_reports' ? 'modern-nav-link-active' : ''}" %>
+          <%= link_to "Review Center", developer_reviews_path, class: "modern-nav-link #{controller_path == 'developer/reviews' ? 'modern-nav-link-active' : ''}" %>
+          <%= link_to "Submissions", developer_submission_records_path, class: "modern-nav-link #{controller_path == 'developer/submission_records' ? 'modern-nav-link-active' : ''}" %>
+        <% else %>
+          <%= link_to "Home", authority_root_path, class: "modern-nav-link #{controller_path == 'authority/dashboard' ? 'modern-nav-link-active' : ''}" %>
+          <%= link_to "Project Details", authority_project_path, class: "modern-nav-link #{controller_path.in?(['authority/projects', 'authority/nocs', 'authority/committee_meetings']) ? 'modern-nav-link-active' : ''}" %>
+          <%= link_to "Progress Updates", authority_development_reports_path, class: "modern-nav-link #{controller_path == 'authority/development_reports' ? 'modern-nav-link-active' : ''}" %>
+        <% end %>
+      </nav>
+
+      <div class="modern-account">
+        <%= render "shared/profile_menu", placement: "top" %>
+      </div>
+    </div>
+  </header>
+
+  <%= render "shared/flash_messages" %>
+  <main class="modern-content-scroll"><%= content %></main>
+</div>
