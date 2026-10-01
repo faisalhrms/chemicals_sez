@@ -31,8 +31,8 @@ namespace :deploy do
   desc "Run application security checks before deployment"
   task :security_check do
     run_locally do
-      execute Gem.bin_path("bundler", "bundle"), "exec brakeman -q -w2"
-      execute Gem.bin_path("bundler", "bundle"), "exec bundler-audit check --update"
+      execute RbConfig.ruby, Gem.bin_path("bundler", "bundle"), "exec brakeman -q -w2"
+      execute RbConfig.ruby, Gem.bin_path("bundler", "bundle"), "exec bundler-audit check --update"
     end
   end
 
