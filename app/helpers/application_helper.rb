@@ -10,7 +10,8 @@ module ApplicationHelper
   end
 
   def table_action_link(label, path, icon:)
-    link_to path, class: "table-action", title: label, aria: { label: label } do
+    link_to path, class: "table-action", title: label, aria: { label: label },
+      data: (icon == "download" ? { turbo: false } : {}) do
       render "shared/portal_icon", name: icon
     end
   end

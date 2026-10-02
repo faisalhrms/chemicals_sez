@@ -2,6 +2,7 @@ enable_integrity!
 
 pin "application"
 pin "confirmation_modal"
+pin "portal_loading"
 pin "simple-datatables", to: "vendor/simple_datatables.js"
 pin "@hotwired/turbo-rails", to: "turbo.min.js"
 pin "@hotwired/stimulus", to: "stimulus.min.js"
