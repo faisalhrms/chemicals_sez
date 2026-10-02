@@ -14,6 +14,8 @@ module SapphireSezPortal
 
     # Uploaded project documents must only be served through authorized controllers.
     config.active_storage.draw_routes = false
+    # Profile photos are served as uploaded; this portal does not generate image variants.
+    config.active_storage.variant_processor = :disabled
 
     # Keep headers explicit and conservative.
     config.action_dispatch.default_headers.merge!({
