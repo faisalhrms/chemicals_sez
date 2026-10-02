@@ -1,0 +1,63 @@
+import { chromium } from 'playwright'
+import assert from 'node:assert/strict'
+
+const baseURL = process.env.PORTAL_BASE_URL || 'http://127.0.0.1:3100'
+assert.ok(['localhost', '127.0.0.1'].includes(new URL(baseURL).hostname), 'Run this data-entry regression only against a local test database')
+const browser = await chromium.launch({ ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}), headless: true })
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } })
+page.setDefaultTimeout(15000)
+const errors = []
+page.on('pageerror', error => errors.push(error.message))
+try {
+  await page.goto(baseURL + '/session/new')
+  await page.getByLabel('Username or email').fill(process.env.PORTAL_SUBMITTER_EMAIL || 'submitter@sapphire.pk')
+  await page.getByLabel('Password', { exact: true }).fill('incorrect-password')
+  await page.getByRole('button', { name: 'Sign in as Developer' }).click()
+  const alert = page.locator('[data-controller="flash"]')
+  await alert.waitFor()
+  await page.mouse.move(0, 0)
+  await alert.waitFor({ state: 'detached', timeout: 8000 })
+
+  await page.getByLabel('Username or email').fill(process.env.PORTAL_SUBMITTER_EMAIL || 'submitter@sapphire.pk')
+  await page.getByLabel('Password', { exact: true }).fill(process.env.PORTAL_PASSWORD || 'ChangeMe!12345')
+  await page.getByRole('button', { name: 'Sign in as Developer' }).click()
+  await page.waitForURL(/\/developer(?:\/|$)/)
+  await page.goto(baseURL + '/developer/development_reports/new')
+  await page.getByRole('button', { name: 'Create Draft' }).click()
+  await page.waitForURL(/development_reports\/\d+\/edit/)
+  const notice = page.locator('[data-controller="flash"]')
+  await notice.hover()
+  await page.waitForTimeout(5500)
+  assert.equal(await notice.count(), 1, 'Hover pauses automatic dismissal')
+  await page.mouse.move(0, 0)
+  await notice.waitFor({ state: 'detached', timeout: 8000 })
+
+  const percentage = page.getByLabel('Roads (Internal) completion percentage', { exact: true })
+  const delay = page.getByLabel('Roads (Internal) reasons for delay', { exact: true })
+  const support = page.getByLabel('Roads (Internal) support required', { exact: true })
+  await percentage.fill('34.25')
+  await page.getByLabel('Roads (Internal) expected completion date', { exact: true }).fill('2026-10-17')
+  await delay.fill('Waiting for materials')
+  await support.fill('Procurement assistance')
+  await page.getByRole('button', { name: 'Submit for Review', exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click()
+  assert.equal(await percentage.inputValue(), '34.25', 'Cancel retains unsaved edits')
+  assert.equal(await support.inputValue(), 'Procurement assistance')
+
+  await page.getByRole('button', { name: 'Submit for Review', exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Submit for Review', exact: true }).click()
+  await page.waitForURL(/development_reports\?month=/)
+  await page.getByRole('link', { name: 'View', exact: true }).first().click()
+  await page.waitForURL(/development_reports\/\d+$/)
+  assert.ok((await page.locator('body').textContent()).includes('Under review'))
+  await page.locator('.datatable-input').fill('Roads (Internal)')
+  const row = page.locator('tbody tr').first()
+  await page.waitForFunction(() => document.querySelector('tbody tr')?.textContent.includes('Waiting for materials'))
+  assert.ok((await row.textContent()).includes('34.25%'))
+  assert.ok((await row.textContent()).includes('17-10-2026'))
+  assert.ok((await row.textContent()).includes('Procurement assistance'))
+  assert.deepEqual(errors, [])
+  console.log('Passed: direct submission saves entered values, cancel retains edits, notifications auto-dismiss and pause on hover, no JavaScript errors')
+} finally {
+  await browser.close()
+}

@@ -1,12 +1,13 @@
 module DevelopmentReports
   class SubmitForReview
-    def self.call(report:, user:)
-      new(report:, user:).call
+    def self.call(report:, user:, attributes: {})
+      new(report:, user:, attributes:).call
     end
 
-    def initialize(report:, user:)
+    def initialize(report:, user:, attributes:)
       @report = report
       @user = user
+      @attributes = attributes
     end
 
     def call
@@ -14,6 +15,13 @@ module DevelopmentReports
 
       @report.with_lock do
         raise ArgumentError, "Report is not editable" unless @report.editable?
+
+        # Save nested items while the report is editable. The surrounding lock
+        # transaction rolls back both changes if submission fails.
+        if @attributes.present?
+          @report.update!(@attributes)
+          AuditLogger.call(user: @user, auditable: @report, action: "draft_updated")
+        end
 
         @report.update!(
           status: :under_review,

@@ -49,11 +49,8 @@
   <div class="flex flex-wrap items-center justify-end gap-3">
     <%= link_to "Back", developer_development_reports_path(month: report.reporting_month.strftime("%Y-%m")), class: "btn-secondary" %>
     <%= form.submit "Save Draft", class: "btn-secondary" %>
-  </div>
-<% end %>
-
-<% if policy(report).submit_for_review? %>
-  <div class="mt-4 flex justify-end border-t border-slate-200 pt-4">
-    <%= button_to "Submit for Review", submit_for_review_developer_development_report_path(report), method: :post, class: "btn-primary", form: { data: { turbo_confirm: "Submit this report for review? It will become read-only until it is reverted." } } %>
+    <% if policy(report).submit_for_review? %>
+      <%= form.button "Submit for Review", type: "submit", name: "intent", value: "submit_for_review", class: "btn-primary", data: { turbo_confirm: "Save your changes and submit this report for review? It will become read-only until it is reverted." } %>
+    <% end %>
   </div>
 <% end %>

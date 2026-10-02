@@ -37,9 +37,9 @@
         <p class="auth-form-subtitle">Sign in with your authorized Sapphire portal account.</p>
 
         <% if flash[:alert] %>
-          <div class="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><%= flash[:alert] %></div>
+          <div data-controller="flash" data-action="mouseenter->flash#pause mouseleave->flash#schedule focusin->flash#pause focusout->flash#schedule" role="alert" class="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"><%= flash[:alert] %></div>
         <% elsif flash[:notice] %>
-          <div class="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"><%= flash[:notice] %></div>
+          <div data-controller="flash" data-action="mouseenter->flash#pause mouseleave->flash#schedule focusin->flash#pause focusout->flash#schedule" role="status" class="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"><%= flash[:notice] %></div>
         <% end %>
 
         <%= form_with url: session_path, class: "mt-6 space-y-5" do |form| %>

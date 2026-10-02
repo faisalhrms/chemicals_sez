@@ -41,6 +41,8 @@ module Developer
     end
 
     def update
+      return submit_for_review if params[:intent] == "submit_for_review"
+
       authorize @report
       if @report.update(report_params)
         AuditLogger.call(user: Current.user, auditable: @report, action: "draft_updated")
@@ -52,11 +54,15 @@ module Developer
 
     def submit_for_review
       authorize @report, :submit_for_review?
-      DevelopmentReports::SubmitForReview.call(report: @report, user: Current.user)
+      DevelopmentReports::SubmitForReview.call(
+        report: @report, user: Current.user,
+        attributes: params[:development_report].present? ? report_params : {}
+      )
       redirect_to developer_development_reports_path(month: @report.reporting_month.strftime("%Y-%m")),
         status: :see_other, notice: "Report submitted for review."
     rescue ArgumentError, ActiveRecord::RecordInvalid => error
-      redirect_to edit_developer_development_report_path(@report), alert: error.message
+      @report.errors.add(:base, error.message) unless @report.errors.any?
+      render :edit, status: :unprocessable_entity
     end
 
     def download_attachment
