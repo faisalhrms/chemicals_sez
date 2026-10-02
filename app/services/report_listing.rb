@@ -23,7 +23,12 @@ class ReportListing
     @direction = params[key(:direction)] == "asc" ? "asc" : "desc"
     @total = scope.count
     scope = scope.left_joins(:submitted_by) if sort == "submitted_by"
-    scope = scope.reorder(Arel.sql("#{SORT_COLUMNS.fetch(sort)} #{direction} NULLS LAST, development_reports.id #{direction}"))
+    table_name, column_name = SORT_COLUMNS.fetch(sort).split(".")
+    column = Arel::Table.new(table_name)[column_name]
+    id = DevelopmentReport.arel_table[:id]
+    order = direction == "asc" ? column.asc : column.desc
+    tie_breaker = direction == "asc" ? id.asc : id.desc
+    scope = scope.reorder(order.nulls_last, tie_breaker)
     @pages = [ (total.to_f / per_page).ceil, 1 ].max
     @page = params[key(:page)].to_i.clamp(1, pages)
     @records = scope.includes(:submitted_by).offset(offset).limit(per_page)
