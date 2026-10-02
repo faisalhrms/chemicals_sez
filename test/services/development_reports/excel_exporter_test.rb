@@ -11,11 +11,18 @@ class DevelopmentReports::ExcelExporterTest < ActiveSupport::TestCase
     items[1].update!(completion_percentage: 100)
     items[2].update!(completion_percentage: 0)
     @files = {}
-    Zip::File.open_buffer(DevelopmentReports::ExcelExporter.new(@report).to_stream) do |zip|
+    stream = DevelopmentReports::ExcelExporter.new(@report).to_stream
+    Zip::File.open_buffer(stream) do |zip|
+      # The local ZIP header stores the required extraction version at offset 4.
+      @zip_versions = zip.map { |entry| stream.string.byteslice(entry.local_header_offset + 4, 2).unpack1("v") }
       zip.each { |entry| @files[entry.name] = Nokogiri::XML(entry.get_input_stream.read).remove_namespaces! if entry.name.end_with?(".xml") }
     end
     @sheet = @files.fetch("xl/worksheets/sheet1.xml")
     @strings = @files.fetch("xl/sharedStrings.xml").xpath("//si").map(&:text)
+  end
+
+  test "uses standard ZIP extraction headers for LibreOffice compatibility" do
+    assert @zip_versions.all? { |version| version <= 20 }, "Small XLSX files must not require ZIP64 extraction"
   end
 
   test "exports the reference report layout with all categories in their saved order" do
