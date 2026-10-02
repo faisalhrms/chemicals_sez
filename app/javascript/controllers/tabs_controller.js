@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["tab", "panel"]
 
   connect() {
-    const requestedTab = window.location.hash.replace("#", "")
+    const requestedTab = new URLSearchParams(window.location.search).get("review_tab") || window.location.hash.replace("#", "")
     const requestedIndex = this.tabTargets.findIndex((tab) => tab.dataset.tabId === requestedTab)
     const defaultIndex = this.tabTargets.findIndex((tab) => tab.dataset.active === "true")
 

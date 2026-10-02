@@ -3,10 +3,12 @@ module Developer
     def index
       authorize DevelopmentReport
       @month = parse_month(params[:month]) || Date.current.beginning_of_month
-      @reports = policy_scope(current_project.development_reports)
+      scope = policy_scope(current_project.development_reports)
         .where.not(status: :draft)
         .for_month(@month)
         .latest_first
+      @listing = ReportListing.new(scope, params)
+      @reports = @listing.records
     end
 
     def show

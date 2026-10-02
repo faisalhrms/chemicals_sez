@@ -1425,3 +1425,57 @@ summary.table-action::-webkit-details-marker { display: none; }
   [data-theme="system"] .datatable-input, [data-theme="system"] .datatable-selector, [data-theme="system"] .datatable-pagination-list button { background: #101825; border-color: #26374f; color: #dbe6f5; }
   [data-theme="system"] .table-action { background: #102348; border-color: #26374f; color: #93c5fd; }
 }
+
+/* Consistent interaction and accessible focus across both portal layouts. */
+button, [type="submit"], [type="button"], [type="reset"], a[href], select, summary,
+label:has(input[type="radio"]), label:has(input[type="checkbox"]) { cursor: pointer; }
+button:disabled, input:disabled, select:disabled, [aria-disabled="true"] { cursor: not-allowed; }
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid #60a5fa; outline-offset: 3px;
+}
+.portal-brand-logo, .auth-logo-card {
+  background: #fff; border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 16px rgba(2, 8, 23, .12);
+}
+.portal-brand-link:hover .portal-brand-logo { box-shadow: 0 0 0 3px rgba(96,165,250,.3); }
+.auth-visual { background: #0b2855; }
+.datatable-dropdown label { display: inline-flex; align-items: center; gap: .65rem; white-space: nowrap; }
+.datatable-search label { display: block; font-size: 0; }
+.datatable-search .datatable-input { font-size: .875rem; }
+.datatable-top::after, .datatable-bottom::after { display: none; }
+.server-table-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; width: 100%; }
+.server-table-search { display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+.server-table-search .datatable-input { width: 16rem; }
+.detail-row dd { overflow-wrap: anywhere; min-width: 0; }
+.workspace-switch label:has(input:focus-visible) { outline: 2px solid #60a5fa; outline-offset: 3px; border-radius: .7rem; }
+@media (max-width: 640px) {
+  .server-table-search, .datatable-search { width: 100%; margin-left: 0; }
+  .server-table-search .datatable-input, .datatable-search .datatable-input { flex: 1; width: 100%; min-width: 0; }
+  .datatable-bottom { align-items: flex-start; }
+  .detail-row { grid-template-columns: 1fr; }
+  .account-tabs { max-width: 100%; overflow-x: auto; }
+  .auth-brand-row { gap: .5rem; }
+}
+
+.table-wrap.datatable-wrapper { border-radius: .85rem; overflow: hidden; }
+.table-wrap.datatable-wrapper.rounded-none { border-radius: 0; }
+
+.server-sort-link { display: inline-flex; align-items: center; gap: .5rem; color: inherit; }
+.server-sort-link:hover { color: #2563eb; }
+.layout-radio { z-index: 1; }
+.layout-choice:has(input:focus-visible), .setting-option:has(input:focus-visible) { outline: 2px solid #60a5fa; outline-offset: 3px; }
+
+[data-theme="dark"] .field-label { color: #a9b8cb; }
+[data-theme="dark"] .field, [data-theme="dark"] .field-compact { color-scheme: dark; }
+[data-theme="dark"] .data-table tr, [data-theme="dark"] .data-table td, [data-theme="dark"] .data-table th { border-color: #202a3a; }
+[data-theme="dark"] .btn-secondary { background: #101825; border-color: #26374f; color: #dbe6f5; }
+[data-theme="dark"] .btn-secondary:hover { background: #18263b; }
+
+@media (prefers-color-scheme: dark) {
+
+[data-theme="system"] .field-label { color: #a9b8cb; }
+[data-theme="system"] .field, [data-theme="system"] .field-compact { color-scheme: dark; }
+[data-theme="system"] .data-table tr, [data-theme="system"] .data-table td, [data-theme="system"] .data-table th { border-color: #202a3a; }
+[data-theme="system"] .btn-secondary { background: #101825; border-color: #26374f; color: #dbe6f5; }
+[data-theme="system"] .btn-secondary:hover { background: #18263b; }
+}

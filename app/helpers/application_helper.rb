@@ -1,4 +1,14 @@
 module ApplicationHelper
+  def report_sort_link(label, column, listing)
+    active = listing.sort == column
+    direction = active && listing.direction == "asc" ? "desc" : "asc"
+    query = request.query_parameters.merge(listing.key(:sort) => column,
+      listing.key(:direction) => direction, listing.key(:page) => 1)
+    query.merge!(review_tab: listing.prefix.delete_suffix("_")) if listing.prefix.present?
+    link_to "#{label} #{active ? (listing.direction == "asc" ? "↑" : "↓") : "↕"}", url_for(query),
+      class: "server-sort-link", aria: { label: "Sort #{label.downcase} #{direction == "asc" ? "ascending" : "descending"}" }
+  end
+
   def table_action_link(label, path, icon:)
     link_to path, class: "table-action", title: label, aria: { label: label } do
       render "shared/portal_icon", name: icon

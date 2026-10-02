@@ -9,13 +9,15 @@
     <div class="w-full max-w-xs"><%= form.label :month, "Select Month", class: "field-label" %><%= form.month_field :month, value: @month.strftime("%Y-%m"), class: "field", data: { action: "change->auto-submit#submit" } %></div>
   <% end %>
 
-  <div class="table-wrap" data-controller="datatable">
-    <table class="data-table" data-datatable-target="table">
-      <thead><tr><th>#</th><th>Report Date</th><th>Reporting Month</th><th>Status</th><th>Approved At</th><th>Action</th></tr></thead>
+  <div class="table-wrap datatable-wrapper">
+    <%= render "shared/server_table_controls", listing: @listing %>
+    <div class="datatable-container">
+    <table class="data-table datatable-table" data-datatable-target="table">
+      <thead><tr><th>#</th><th><%= report_sort_link "Report Date", "report_date", @listing %></th><th><%= report_sort_link "Reporting Month", "reporting_month", @listing %></th><th><%= report_sort_link "Status", "status", @listing %></th><th><%= report_sort_link "Approved At", "approved_at", @listing %></th><th>Action</th></tr></thead>
       <tbody>
         <% @reports.each_with_index do |report, index| %>
           <tr>
-            <td><%= index + 1 %></td>
+            <td><%= @listing.offset + index + 1 %></td>
             <td class="font-semibold text-slate-900"><%= format_date(report.report_date) %></td>
             <td><%= report.reporting_month_label %></td>
             <td><%= render "shared/status_badge", status: report.status %></td>
@@ -26,5 +28,7 @@
         <% if @reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No approved reports for this month.</td></tr><% end %>
       </tbody>
     </table>
+    </div>
+    <%= render "shared/server_table_pagination", listing: @listing %>
   </div>
 </div>

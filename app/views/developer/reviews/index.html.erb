@@ -7,18 +7,20 @@
 
   <div class="card overflow-hidden">
     <div class="portal-tabs" role="tablist" aria-label="Review report status">
-      <button type="button" class="portal-tab" data-tabs-target="tab" data-index="0" data-active="true" data-action="tabs#show" role="tab">Under Review (<%= @pending_reports.count %>)</button>
-      <button type="button" class="portal-tab" data-tabs-target="tab" data-index="1" data-action="tabs#show" role="tab"><%= current_user.reviewer? ? "Reviewed" : "Decided" %> (<%= @reviewed_reports.count %>)</button>
+      <button type="button" class="portal-tab" data-tabs-target="tab" data-tab-id="pending" data-index="0" data-active="true" data-action="tabs#show" role="tab">Under Review (<%= @pending_listing.total %>)</button>
+      <button type="button" class="portal-tab" data-tabs-target="tab" data-tab-id="reviewed" data-index="1" data-action="tabs#show" role="tab"><%= current_user.reviewer? ? "Reviewed" : "Decided" %> (<%= @reviewed_listing.total %>)</button>
     </div>
 
     <section class="p-0" data-tabs-target="panel">
-      <div class="table-wrap rounded-none border-0" data-controller="datatable">
-        <table class="data-table" data-datatable-target="table">
-          <thead><tr><th>#</th><th>Reporting Month</th><th>Report Date</th><th>Submitted By</th><th>Status</th><th>Action</th></tr></thead>
+      <div class="table-wrap datatable-wrapper rounded-none border-0">
+        <%= render "shared/server_table_controls", listing: @pending_listing %>
+        <div class="datatable-container">
+        <table class="data-table datatable-table" data-datatable-target="table">
+          <thead><tr><th>#</th><th><%= report_sort_link "Reporting Month", "reporting_month", @pending_listing %></th><th><%= report_sort_link "Report Date", "report_date", @pending_listing %></th><th><%= report_sort_link "Submitted By", "submitted_by", @pending_listing %></th><th><%= report_sort_link "Status", "status", @pending_listing %></th><th>Action</th></tr></thead>
           <tbody>
             <% @pending_reports.each_with_index do |report, index| %>
               <tr>
-                <td><%= index + 1 %></td>
+                <td><%= @pending_listing.offset + index + 1 %></td>
                 <td class="font-medium text-slate-900"><%= report.reporting_month_label %></td>
                 <td><%= format_date(report.report_date) %></td>
                 <td><%= report.submitted_by&.name || "—" %></td>
@@ -29,17 +31,21 @@
             <% if @pending_reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No reports are waiting for review.</td></tr><% end %>
           </tbody>
         </table>
+        </div>
+        <%= render "shared/server_table_pagination", listing: @pending_listing %>
       </div>
     </section>
 
     <section class="hidden p-0" data-tabs-target="panel">
-      <div class="table-wrap rounded-none border-0" data-controller="datatable">
-        <table class="data-table" data-datatable-target="table">
-          <thead><tr><th>#</th><th>Reporting Month</th><th>Report Date</th><th>Status</th><th>Reviewed At</th><th>Action</th></tr></thead>
+      <div class="table-wrap datatable-wrapper rounded-none border-0">
+        <%= render "shared/server_table_controls", listing: @reviewed_listing %>
+        <div class="datatable-container">
+        <table class="data-table datatable-table" data-datatable-target="table">
+          <thead><tr><th>#</th><th><%= report_sort_link "Reporting Month", "reporting_month", @reviewed_listing %></th><th><%= report_sort_link "Report Date", "report_date", @reviewed_listing %></th><th><%= report_sort_link "Status", "status", @reviewed_listing %></th><th><%= report_sort_link "Reviewed At", "reviewed_at", @reviewed_listing %></th><th>Action</th></tr></thead>
           <tbody>
             <% @reviewed_reports.each_with_index do |report, index| %>
               <tr>
-                <td><%= index + 1 %></td>
+                <td><%= @reviewed_listing.offset + index + 1 %></td>
                 <td class="font-medium text-slate-900"><%= report.reporting_month_label %></td>
                 <td><%= format_date(report.report_date) %></td>
                 <td><%= render "shared/status_badge", status: report.status %></td>
@@ -50,6 +56,8 @@
             <% if @reviewed_reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No reviewed reports yet.</td></tr><% end %>
           </tbody>
         </table>
+        </div>
+        <%= render "shared/server_table_pagination", listing: @reviewed_listing %>
       </div>
     </section>
   </div>

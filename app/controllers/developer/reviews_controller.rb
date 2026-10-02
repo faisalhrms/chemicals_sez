@@ -9,11 +9,15 @@ module Developer
 
       if Current.user.reviewer?
         @pending_reports = scope.under_review.where.not(submitted_by_id: Current.user.id).latest_first
-        @reviewed_reports = scope.where(reviewed_by_id: Current.user.id).where(status: %i[approved reverted]).latest_first.limit(30)
+        @reviewed_reports = scope.where(reviewed_by_id: Current.user.id).where(status: %i[approved reverted]).latest_first
       else
         @pending_reports = scope.where(submitted_by_id: Current.user.id, status: :under_review).latest_first
-        @reviewed_reports = scope.where(submitted_by_id: Current.user.id, status: %i[approved reverted]).latest_first.limit(30)
+        @reviewed_reports = scope.where(submitted_by_id: Current.user.id, status: %i[approved reverted]).latest_first
       end
+      @pending_listing = ReportListing.new(@pending_reports, params, prefix: "pending_")
+      @reviewed_listing = ReportListing.new(@reviewed_reports, params, prefix: "reviewed_")
+      @pending_reports = @pending_listing.records
+      @reviewed_reports = @reviewed_listing.records
     end
 
     def show

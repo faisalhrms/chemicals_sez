@@ -1,0 +1,10 @@
+<div class="datatable-bottom">
+  <span class="datatable-info" role="status">Showing <%= listing.total.zero? ? 0 : listing.offset + 1 %>–<%= [listing.offset + listing.per_page, listing.total].min %> of <%= listing.total %> records</span>
+  <% if listing.pages > 1 %>
+    <nav aria-label="Report pages" class="flex items-center gap-2">
+      <% if listing.page > 1 %><%= link_to "Previous", url_for(request.query_parameters.merge(listing.key(:page) => listing.page - 1, review_tab: listing.prefix.presence&.delete_suffix("_"), anchor: listing.prefix.delete_suffix("_"))), class: "btn-secondary" %><% end %>
+      <span class="text-sm text-slate-500">Page <%= listing.page %> of <%= listing.pages %></span>
+      <% if listing.page < listing.pages %><%= link_to "Next", url_for(request.query_parameters.merge(listing.key(:page) => listing.page + 1, review_tab: listing.prefix.presence&.delete_suffix("_"), anchor: listing.prefix.delete_suffix("_"))), class: "btn-secondary" %><% end %>
+    </nav>
+  <% end %>
+</div>

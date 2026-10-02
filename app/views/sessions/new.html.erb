@@ -3,12 +3,12 @@
 <div class="auth-page">
   <div class="auth-shell">
     <section class="auth-visual">
-      <%= image_tag "login-campus.png", alt: "", class: "auth-visual-image", aria: { hidden: true } %>
+      <%= image_tag "login-campus.webp", srcset: "#{asset_path("login-campus-small.webp")} 800w, #{asset_path("login-campus.webp")} 1600w", sizes: "(max-width: 900px) 100vw, 65vw", width: 1600, height: 1067, fetchpriority: "high", decoding: "async", alt: "", class: "auth-visual-image", aria: { hidden: true } %>
       <div class="auth-visual-overlay" aria-hidden="true"></div>
 
       <div class="auth-brand-row">
         <span class="auth-logo-card">
-          <%= image_tag "sapphire-logo.png", alt: "Sapphire Chemicals", class: "h-11 w-auto" %>
+          <%= image_tag "sapphire-logo-small.png", alt: "Sapphire Chemicals", class: "h-11 w-auto" %>
         </span>
         <%= image_tag "invest-pakistan-boi.png", alt: "Invest Pakistan and BOI", class: "h-11 w-auto rounded-md bg-white/95 px-2 py-1" %>
       </div>

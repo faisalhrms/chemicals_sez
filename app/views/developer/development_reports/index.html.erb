@@ -15,13 +15,15 @@
     </div>
   <% end %>
 
-  <div class="table-wrap" data-controller="datatable">
-    <table class="data-table" data-datatable-target="table">
-      <thead><tr><th>#</th><th>Report Date</th><th>Status</th><th>Submitted By</th><th>Last Updated</th><th>Actions</th></tr></thead>
+  <div class="table-wrap datatable-wrapper">
+    <%= render "shared/server_table_controls", listing: @listing %>
+    <div class="datatable-container">
+    <table class="data-table datatable-table" data-datatable-target="table">
+      <thead><tr><th>#</th><th><%= report_sort_link "Report Date", "report_date", @listing %></th><th><%= report_sort_link "Status", "status", @listing %></th><th><%= report_sort_link "Submitted By", "submitted_by", @listing %></th><th><%= report_sort_link "Last Updated", "updated_at", @listing %></th><th>Actions</th></tr></thead>
       <tbody>
         <% @reports.each_with_index do |report, index| %>
           <tr>
-            <td><%= index + 1 %></td>
+            <td><%= @listing.offset + index + 1 %></td>
             <td class="font-semibold text-slate-900"><%= format_date(report.report_date) %></td>
             <td><%= render "shared/status_badge", status: report.status %></td>
             <td><%= report.submitted_by&.name || "—" %></td>
@@ -37,5 +39,7 @@
         <% if @reports.empty? %><tr><td colspan="6" class="text-center text-slate-500">No reports found for this month.</td></tr><% end %>
       </tbody>
     </table>
+    </div>
+    <%= render "shared/server_table_pagination", listing: @listing %>
   </div>
 </div>

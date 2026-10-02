@@ -1,0 +1,15 @@
+<div class="datatable-top">
+  <%= form_with url: "#{request.path}#{listing.prefix.present? ? "##{listing.prefix.delete_suffix("_")}" : ""}", method: :get, class: "server-table-toolbar" do %>
+    <% request.query_parameters.except(listing.key(:q), listing.key(:per_page), listing.key(:page), "review_tab").each do |key, value| %>
+      <%= hidden_field_tag key, value if value.is_a?(String) %>
+    <% end %>
+    <%= hidden_field_tag :review_tab, listing.prefix.delete_suffix("_") if listing.prefix.present? %>
+    <div class="datatable-dropdown">
+      <label><%= select_tag listing.key(:per_page), options_for_select([10, 25, 50, 100], listing.per_page), class: "datatable-selector", aria: { label: "Rows per page" }, data: { controller: "auto-submit", action: "change->auto-submit#submit" } %> rows per page</label>
+    </div>
+    <div class="server-table-search">
+      <%= search_field_tag listing.key(:q), listing.query, placeholder: "Search records…", class: "datatable-input", aria: { label: "Search records" } %>
+      <%= submit_tag "Search", class: "btn-secondary", name: nil %>
+    </div>
+  <% end %>
+</div>

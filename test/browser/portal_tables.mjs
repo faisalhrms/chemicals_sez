@@ -48,10 +48,12 @@ assert.equal(await page.locator('#test-list .datatable-wrapper').count(),0)
 for (let i=0;i<3;i++) {
  await page.evaluate(()=>window.Turbo.visit('/developer/reviews'))
  await page.waitForURL(/developer\/reviews/)
+ await page.locator('h1').filter({hasText:'Review Center'}).waitFor()
  await page.locator('.datatable-input').first().waitFor()
  assert.equal(await page.locator('.datatable-wrapper').count(),2)
  await page.evaluate(()=>window.Turbo.visit('/developer/development_reports'))
  await page.waitForURL(/developer\/development_reports/)
+ await page.locator('h1').filter({hasText:'Progress Update'}).waitFor()
  await page.locator('.datatable-input').first().waitFor()
  assert.equal(await page.locator('.datatable-wrapper').count(),1)
 }
